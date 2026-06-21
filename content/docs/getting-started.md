@@ -1,9 +1,35 @@
 +++
-title = "Getting Started"
-description = "How to get started with our platform."
+title = "快速入门"
+description = "如何开始使用玄天 CTF 实验室。"
 date = 2026-06-21T00:00:00.000Z
 +++
 
-## Getting Started
+## 快速入门
 
-This guide will help you get started.
+本指南将帮助你快速了解玄天 CTF 实验室并开始你的学习之旅。
+
+### 第一步：了解 CTF
+
+CTF（Capture The Flag）是一项网络安全攻防竞赛。参赛者需要通过各种技术手段，找到隐藏在题目中的 flag（通常是一段特定格式的字符串）。
+
+CTF 比赛通常包含以下方向：
+
+- **Web**：Web 应用安全
+- **Reverse**：逆向工程
+- **Crypto**：密码学
+- **Pwn**：二进制漏洞利用
+- **Misc**：杂项（隐写、取证等）
+
+### 第二步：选择方向
+
+如果你是新手，建议从 Web 或 Misc 方向入手，这两个方向的入门门槛相对较低，且能快速获得成就感。
+
+### 第三步：开始练习
+
+浏览我们的文档和靶场，选择感兴趣的题目开始练习。遇到困难时，可以查阅提示或在社区中寻求帮助。
+
+### 推荐资源
+
+- [CTF Wiki](https://ctf-wiki.org/) - CTF 技术百科
+- [Hack The Box](https://www.hackthebox.com/) - 在线渗透测试平台
+- [BUUCTF](https://buuoj.cn/) - 国内 CTF 题目聚合平台
