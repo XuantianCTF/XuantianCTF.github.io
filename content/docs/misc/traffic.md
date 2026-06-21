@@ -8,6 +8,19 @@ date = 2026-06-21T08:00:00.000Z
 
 流量分析是 CTF 杂项方向的常见题型，需要从网络抓包文件（.pcap/.pcapng）中提取信息。
 
+### 什么是流量分析？
+
+流量分析是指捕获和分析网络通信数据包的过程。通过分析流量包，你可以看到网络中传输的所有数据，包括 HTTP 请求、DNS 查询、文件传输等。
+
+在 CTF 中，流量分析题目通常要求你从捕获的流量中提取隐藏的 flag、密码、文件等信息。
+
+### 流量分析的应用
+
+- **网络安全监控**：检测异常流量和攻击行为
+- **故障排查**：诊断网络连接问题
+- **数字取证**：分析网络攻击过程
+- **协议逆向**：理解未知协议的结构
+
 ---
 
 ### 一、Wireshark 基础
@@ -46,8 +59,7 @@ frame contains "flag"
 
 1. **追踪 TCP 流**：右键 → Follow → TCP Stream
 2. **导出 HTTP 对象**：File → Export Objects → HTTP
-3. **导出 DNS 查询**：Tools → Statistics → DNS
-4. **查看会话**：Statistics → Conversations
+3. **查看会话**：Statistics → Conversations
 
 ---
 
