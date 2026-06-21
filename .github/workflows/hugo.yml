@@ -43,8 +43,8 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install TailwindCSS
-        run: npm install @tailwindcss/cli @tailwindcss/typography
+      - name: Install Node.js dependencies
+        run: npm install @tailwindcss/cli @tailwindcss/typography preact
 
       - name: Setup Go
         uses: actions/setup-go@v5
