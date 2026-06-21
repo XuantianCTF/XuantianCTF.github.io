@@ -1,3 +1,20 @@
+# Hugo build output
 public/
 resources/
 .hugo_build.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Node (if using Tina CMS or asset pipeline)
+node_modules/
+package-lock.json
+yarn.lock
