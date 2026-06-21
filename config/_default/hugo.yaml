@@ -13,7 +13,6 @@ cascade:
     show_date_updated: true
   - target:
       path: /blog/**
-      kind: page
     pager: true
     editable: true
     show_date: true
