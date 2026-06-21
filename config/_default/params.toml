@@ -1,0 +1,41 @@
+uniqueHomePage = true
+
+blogDir = "blog"
+
+repo = "https://github.com/XuantianCTF/XuantianCTF.github.io"
+
+time_format_blog = "Monday, January 02, 2006"
+time_format_default = "January 2, 2006"
+enableDarkMode = true
+defaultLightingMode = "auto"
+
+codeMaxLines = 15
+showLineNumbers = false
+
+otherSearchableFields = [
+  "Tags",
+  "Categories",
+]
+
+enableCopyright = false
+
+[search]
+on = true
+global = false
+
+[search.algolia]
+enable = false
+
+[logo]
+lightMode = "/images/logo.svg"
+darkMode = "/images/logo-light.svg"
+
+[source]
+name = "GitHub"
+iconLight = "/images/GitHubMarkLight.svg"
+iconDark = "/images/GitHubMarkDark.svg"
+url = "https://github.com/XuantianCTF/XuantianCTF.github.io"
+
+[author]
+name = "Xuantian CTF"
+url = "https://xuantianctf.github.io/"
