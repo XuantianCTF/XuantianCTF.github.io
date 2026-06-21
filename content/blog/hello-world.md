@@ -1,12 +1,15 @@
-+++
-title = "玄天 CTF 实验室正式上线"
-description = "玄天 CTF 实验室网站正式上线，欢迎各位 CTF 爱好者访问。"
-date = 2026-06-21T00:00:00.000Z
-tags = ["公告", "CTF"]
-categories = ["公告"]
-+++
-
-## 玄天 CTF 实验室正式上线
+---
+title: "玄天 CTF 实验室正式上线"
+summary: "玄天 CTF 实验室网站正式上线，欢迎各位 CTF 爱好者访问。"
+date: 2026-06-21
+authors:
+  - admin
+tags:
+  - 公告
+  - CTF
+categories:
+  - 公告
+---
 
 经过一段时间的筹备，玄天 CTF 实验室网站终于正式上线了！
 
@@ -31,6 +34,5 @@ categories = ["公告"]
 如果你有任何问题或建议，欢迎通过以下方式联系我们：
 
 - GitHub：[XuantianCTF](https://github.com/XuantianCTF)
-- 邮箱：contact@xuantianctf.github.io
 
 让我们一起在 CTF 的世界里探索和成长！
