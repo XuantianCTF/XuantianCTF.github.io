@@ -167,7 +167,6 @@ npm install
 
 ```bash
 # 需要在 PATH 中包含 Node.js 22
-export PATH=/tmp/node-v22.16.0-linux-x64/bin:$PATH
 
 # 启动本地服务器（含草稿）
 hugo server -D
