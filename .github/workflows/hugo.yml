@@ -38,6 +38,14 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install TailwindCSS
+        run: npm install @tailwindcss/cli @tailwindcss/typography
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
