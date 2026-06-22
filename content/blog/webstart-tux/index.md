@@ -2,8 +2,6 @@
 title: "CTF Web 方向学习：先把底子打扎实"
 summary: "CTF Web 方向该怎么学，这里有自己的感悟"
 date: 2026-06-22
-authors:
-  - tux
 tags:
   - Web安全
   - CTF

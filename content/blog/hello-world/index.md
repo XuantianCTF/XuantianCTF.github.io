@@ -2,8 +2,6 @@
 title: "玄天 CTF 实验室正式上线"
 summary: "玄天 CTF 实验室网站正式上线，欢迎各位 CTF 爱好者访问。"
 date: 2026-06-21
-authors:
-  - admin
 tags:
   - 公告
   - CTF

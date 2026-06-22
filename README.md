@@ -53,8 +53,6 @@ content/blog/
 title: "文章标题"
 summary: "文章摘要（1-2 句话）"
 date: 2026-06-21
-authors:
-  - admin
 tags:
   - 标签1
   - 标签2
@@ -70,7 +68,7 @@ categories:
 **注意事项**：
 - Front matter 使用 `---`（YAML 格式），不是 `+++`
 - `date` 格式为 `YYYY-MM-DD`
-- `authors` 对应 `content/authors/` 下的目录名
+- 不需要 `authors` 字段，直接写文章即可
 - 博客列表页 `_index.md` 包含 `view: date-title-summary`，**不要修改**
 
 ### 编写文档
@@ -116,7 +114,7 @@ content/docs/
 title: "页面标题"
 description: "页面描述（可选）"
 date: 2026-06-21T00:00:00.000Z
-+++
+---
 
 ## 内容标题
 
@@ -131,7 +129,7 @@ date: 2026-06-21T00:00:00.000Z
 ```markdown
 ---
 title: "方向名称"
-+++
+---
 
 ## 引言
 
@@ -166,8 +164,6 @@ npm install
 ### 启动开发服务器
 
 ```bash
-# 需要在 PATH 中包含 Node.js 22
-
 # 启动本地服务器（含草稿）
 hugo server -D
 
@@ -193,14 +189,13 @@ npx pagefind --site public
 ├── content/                   # 内容目录
 │   ├── _index.md              # 首页（使用 blocks 构建）
 │   ├── blog/                  # 博客文章（每篇一个子目录）
-│   ├── docs/                  # 文档目录
-│   │   ├── web/               # Web 安全
-│   │   ├── reverse/           # 逆向工程
-│   │   ├── crypto/            # 密码学
-│   │   ├── pwn/               # PWN
-│   │   ├── misc/              # 杂项
-│   │   └── mobile/            # 移动安全
-│   └── authors/               # 作者信息
+│   └── docs/                  # 文档目录
+│       ├── web/               # Web 安全
+│       ├── reverse/           # 逆向工程
+│       ├── crypto/            # 密码学
+│       ├── pwn/               # PWN
+│       ├── misc/              # 杂项
+│       └── mobile/            # 移动安全
 ├── static/                    # 静态资源
 ├── themes/theme-documentation/  # HugoBlox 主题
 ├── go.mod                     # Hugo 模块依赖

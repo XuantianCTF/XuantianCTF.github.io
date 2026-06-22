@@ -2,8 +2,6 @@
 title: "CTF 入门指南：各方向详解"
 summary: "全面介绍 CTF 比赛中各个方向的基础知识、学习路径和推荐资源。"
 date: 2026-06-21
-authors:
-  - admin
 tags:
   - 入门
   - CTF
