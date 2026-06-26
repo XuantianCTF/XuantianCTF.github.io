@@ -10,12 +10,12 @@
 
 | 方向 | 说明 |
 |------|------|
-| [Web 安全](https://xuantianctf.github.io/docs/web/) | SQL 注入、XSS、文件上传等 Web 漏洞攻防 |
-| [逆向工程](https://xuantianctf.github.io/docs/reverse/) | 二进制分析、脱壳、调试等逆向技术 |
-| [密码学](https://xuantianctf.github.io/docs/crypto/) | 古典密码、RSA、哈希碰撞等密码学挑战 |
-| [PWN](https://xuantianctf.github.io/docs/pwn/) | 栈溢出、堆利用、ROP 等二进制漏洞利用 |
-| [杂项](https://xuantianctf.github.io/docs/misc/) | 隐写术、流量分析、取证分析等综合技能 |
-| [移动安全](https://xuantianctf.github.io/docs/mobile/) | Android/iOS 逆向与安全分析 |
+| [Web 安全](https://xuantianctf.github.io/docs/web-sqli/) | SQL 注入、XSS、文件上传等 Web 漏洞攻防 |
+| [逆向工程](https://xuantianctf.github.io/docs/reverse-basic/) | 二进制分析、脱壳、调试等逆向技术 |
+| [密码学](https://xuantianctf.github.io/docs/crypto-classical/) | 古典密码、RSA、哈希碰撞等密码学挑战 |
+| [PWN](https://xuantianctf.github.io/docs/pwn-stack-overflow/) | 栈溢出、堆利用、ROP 等二进制漏洞利用 |
+| [杂项](https://xuantianctf.github.io/docs/misc-steganography/) | 隐写术、流量分析、取证分析等综合技能 |
+| [移动安全](https://xuantianctf.github.io/docs/mobile-android/) | Android/iOS 逆向与安全分析 |
 
 ## 🏠 博客
 
@@ -24,9 +24,9 @@
 
 ## 🛠 技术栈
 
-- **静态网站生成器**：[Hugo](https://gohugo.io/) v0.163.3
-- **主题**：[HugoBlox Easy Docs](https://github.com/HugoBlox/hugo-theme-documentation)
-- **CSS 框架**：[Tailwind CSS](https://tailwindcss.com/)
+- **框架**：[Astro](https://astro.build/) + [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **样式**：[Tailwind CSS](https://tailwindcss.com/)
+- **模板**：基于 [Astro Portfolio](https://github.com/Gothsec/Astro-portfolio) 定制
 - **部署**：[GitHub Pages](https://pages.github.com/) + GitHub Actions
 
 ---
@@ -35,29 +35,25 @@
 
 ### 编写博客文章
 
-在 `content/blog/` 目录下创建**子目录**，每个子目录包含一个 `index.md` 文件：
+在 `src/content/blog/` 目录下创建 `.md` 文件：
 
 ```
-content/blog/
-├── _index.md                    # 博客列表页（勿删）
-├── my-new-post/
-│   └── index.md                 # 你的文章
-└── another-post/
-    └── index.md
+src/content/blog/
+├── hello-world.md
+├── ctf-beginners-guide.md
+└── your-new-post.md
 ```
 
-**文章模板**（`index.md`）：
+**文章模板**（`your-new-post.md`）：
 
 ```markdown
 ---
 title: "文章标题"
-summary: "文章摘要（1-2 句话）"
+description: "文章摘要（1-2 句话）"
 date: 2026-06-21
 tags:
   - 标签1
   - 标签2
-categories:
-  - 分类
 ---
 
 ## 正文内容
@@ -66,54 +62,47 @@ categories:
 ```
 
 **注意事项**：
-- Front matter 使用 `---`（YAML 格式），不是 `+++`
+- Front matter 使用 `---`（YAML 格式）
 - `date` 格式为 `YYYY-MM-DD`
-- 不需要 `authors` 字段，直接写文章即可
-- 博客列表页 `_index.md` 包含 `view: date-title-summary`，**不要修改**
+- `description` 用于列表页摘要展示
+- `tags` 用于标签分类
 
 ### 编写文档
 
-文档位于 `content/docs/` 目录，支持嵌套层级：
+文档位于 `src/content/docs/` 目录，使用扁平化命名：
 
 ```
-content/docs/
-├── _index.md                    # 文档首页（勿删）
-├── getting-started.md           # 快速入门
-├── web/
-│   ├── _index.md                # Web 安全子页面首页
-│   ├── sqli.md                  # SQL 注入
-│   ├── xss.md                   # XSS
-│   └── upload.md                # 文件上传
-├── reverse/
-│   ├── _index.md
-│   └── basic.md
-├── crypto/
-│   ├── _index.md
-│   ├── classical.md
-│   └── rsa.md
-├── pwn/
-│   ├── _index.md
-│   └── stack-overflow.md
-├── misc/
-│   ├── _index.md
-│   ├── steganography.md
-│   ├── traffic.md
-│   └── forensics.md
-└── mobile/
-    ├── _index.md
-    └── android.md
+src/content/docs/
+├── getting-started.md        # 快速入门
+├── web-sqli.md               # SQL 注入
+├── web-xss.md                # XSS
+├── web-upload.md             # 文件上传
+├── reverse-basic.md          # 逆向基础
+├── crypto-classical.md       # 古典密码
+├── crypto-rsa.md             # RSA
+├── pwn-stack-overflow.md     # 栈溢出
+├── misc-steganography.md     # 隐写术
+├── misc-forensics.md         # 取证分析
+├── misc-traffic.md           # 流量分析
+├── mobile-android.md         # Android 逆向
+├── pentest-recon.md          # 信息收集
+├── pentest-exploit.md        # 漏洞利用
+└── pentest-post-exploit.md   # 后渗透
 ```
 
-**新建文档页面**：
+**新建文档**：
 
-1. 在对应目录下创建 `.md` 文件
-2. 添加 Front matter：
+1. 在 `src/content/docs/` 下创建 `.md` 文件
+2. 文件名格式：`分类-主题.md`（如 `web-sqli.md`）
+3. 添加 Front matter：
 
 ```markdown
 ---
 title: "页面标题"
 description: "页面描述（可选）"
-date: 2026-06-21T00:00:00.000Z
+date: 2026-06-21
+tags:
+  - 标签
 ---
 
 ## 内容标题
@@ -121,34 +110,14 @@ date: 2026-06-21T00:00:00.000Z
 正文内容...
 ```
 
-**新建文档子方向**：
-
-1. 在 `content/docs/` 下创建新目录
-2. 创建 `_index.md` 作为该方向首页：
-
-```markdown
----
-title: "方向名称"
----
-
-## 引言
-
-该方向的介绍文字和学习路线...
-```
-
-**注意事项**：
-- 文档目录的 `_index.md` 控制侧边栏导航顺序，可通过 `weight` 字段调整
-- `_index.md` 中的 `{{< button >}}` 等 shortcode 已被新主题移除，使用普通 Markdown 链接
-
 ---
 
 ## 🚀 本地开发
 
 ### 环境要求
 
-- Hugo v0.163.3+（Extended 版本）
-- Node.js v22+
-- Go 1.19+
+- Node.js v20+
+- pnpm v9+
 
 ### 安装依赖
 
@@ -157,21 +126,21 @@ title: "方向名称"
 git clone https://github.com/XuantianCTF/XuantianCTF.github.io.git
 cd XuantianCTF.github.io
 
-# 安装 Node.js 依赖（Tailwind CSS、Preact、Pagefind）
-npm install
+# 安装依赖
+pnpm install
 ```
 
 ### 启动开发服务器
 
 ```bash
-# 启动本地服务器（含草稿）
-hugo server -D
+# 启动本地服务器
+pnpm dev
 
 # 构建生产版本
-hugo --minify
+pnpm build
 
-# 生成搜索索引
-npx pagefind --site public
+# 预览构建结果
+pnpm preview
 ```
 
 ---
@@ -179,27 +148,33 @@ npx pagefind --site public
 ## 📁 项目结构
 
 ```
-├── config/                    # Hugo 配置（YAML 格式）
-│   └── _default/
-│       ├── hugo.yaml          # 主配置
-│       ├── params.yaml        # 主题参数
-│       ├── languages.yaml     # 语言配置
-│       ├── menus.yaml         # 菜单配置
-│       └── module.yaml        # Hugo 模块配置
-├── content/                   # 内容目录
-│   ├── _index.md              # 首页（使用 blocks 构建）
-│   ├── blog/                  # 博客文章（每篇一个子目录）
-│   └── docs/                  # 文档目录
-│       ├── web/               # Web 安全
-│       ├── reverse/           # 逆向工程
-│       ├── crypto/            # 密码学
-│       ├── pwn/               # PWN
-│       ├── misc/              # 杂项
-│       └── mobile/            # 移动安全
-├── static/                    # 静态资源
-├── themes/theme-documentation/  # HugoBlox 主题
-├── go.mod                     # Hugo 模块依赖
-└── .github/workflows/hugo.yml  # GitHub Actions 部署
+├── src/
+│   ├── components/           # Astro 组件
+│   │   ├── nav.astro         # 导航栏
+│   │   ├── home.astro        # 首页 Hero
+│   │   ├── projects.astro    # CTF 方向展示
+│   │   ├── contact.astro     # 联系方式
+│   │   ├── footer.astro      # 页脚
+│   │   └── logoWall.astro    # 技术栈滚动
+│   ├── React/                # React 组件
+│   │   ├── LetterGlitch.tsx  # 文字特效
+│   │   └── SkillsList.tsx    # 技能列表
+│   ├── content/
+│   │   ├── blog/             # 博客文章
+│   │   └── docs/             # 文档页面
+│   ├── layouts/
+│   │   └── Layout.astro      # 全局布局
+│   └── pages/
+│       ├── index.astro       # 首页
+│       ├── blog/             # 博客路由
+│       └── docs/             # 文档路由
+├── public/                   # 静态资源
+│   ├── fonts/                # 字体文件
+│   └── svg/                  # 图标
+├── astro.config.mjs          # Astro 配置
+├── tailwind.config.mjs       # Tailwind 配置
+├── tsconfig.json             # TypeScript 配置
+└── .github/workflows/astro.yml  # GitHub Actions
 ```
 
 ---
@@ -242,7 +217,6 @@ git push origin feature/your-feature
 - ❌ 在未审查的情况下合并自己的 PR
 - ❌ 使用 `git push --force` 覆盖远程分支
 - ❌ 提交敏感信息（密码、密钥、Token 等）
-- ❌ 修改 `layouts/` 目录下的文件（除非你确定知道自己在做什么）
 
 ---
 
