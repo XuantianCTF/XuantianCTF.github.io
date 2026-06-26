@@ -1,0 +1,108 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title={post.data.title}>
+  <Nav />
+  <main class="max-w-3xl mx-auto py-24">
+    <a href="/blog" class="text-[var(--sec)] hover:underline mb-6 inline-block">&larr; 返回博客</a>
+    <article>
+      <h1 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-4">{post.data.title}</h1>
+      <div class="flex items-center gap-4 text-sm text-[var(--white-icon)] mb-8">
+        <time>{post.data.date.toLocaleDateString("zh-CN")}</time>
+        <div class="flex gap-2">
+          {post.data.tags.map((tag) => (
+            <span class="text-xs text-[var(--sec)] border border-[var(--sec)] rounded-full px-2 py-0.5">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div class="prose prose-invert max-w-none text-[var(--white)]">
+        <Content />
+      </div>
+    </article>
+  </main>
+  <Footer />
+</Layout>
+
+<style is:global>
+  .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--white);
+  }
+  .prose h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--white);
+  }
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.75;
+    color: var(--white-icon);
+  }
+  .prose ul, .prose ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  .prose li {
+    margin-bottom: 0.5rem;
+    color: var(--white-icon);
+  }
+  .prose code {
+    background: #1a1a2e;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--sec);
+  }
+  .prose pre {
+    background: #1a1a2e;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+  .prose pre code {
+    background: none;
+    padding: 0;
+    color: var(--white);
+  }
+  .prose a {
+    color: var(--sec);
+    text-decoration: underline;
+  }
+  .prose strong {
+    color: var(--white);
+    font-weight: 600;
+  }
+  .prose hr {
+    border-color: #ffffff10;
+    margin: 2rem 0;
+  }
+  .prose blockquote {
+    border-left: 3px solid var(--sec);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    color: var(--white-icon);
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Layout title="博客">
+  <Nav />
+  <main class="max-w-5xl mx-auto py-24">
+    <h1 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-8">博客</h1>
+    <p class="text-[var(--white-icon)] mb-12">CTF 学习笔记、技术分享与心得体会。</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {
+        posts.map((post) => (
+          <a
+            href={`/blog/${post.id}`}
+            class="group block p-6 rounded-2xl border border-[var(--white-icon-tr)] bg-[#1414149c] hover:bg-[var(--white-icon-tr)] hover:border-[var(--sec)] transition-all duration-300"
+          >
+            <div class="text-sm text-[var(--white-icon)] mb-2">
+              {post.data.date.toLocaleDateString("zh-CN")}
+            </div>
+            <h2 class="text-xl font-semibold mb-2 text-[var(--white)] group-hover:text-[var(--sec)] transition-colors">
+              {post.data.title}
+            </h2>
+            {post.data.description && (
+              <p class="text-sm text-[var(--white-icon)] mb-3">{post.data.description}</p>
+            )}
+            <div class="flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <span class="text-xs text-[var(--sec)] border border-[var(--sec)] rounded-full px-2 py-0.5">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </main>
+  <Footer />
+</Layout>

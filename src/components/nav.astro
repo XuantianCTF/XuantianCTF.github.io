@@ -1,0 +1,96 @@
+---
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const navItems: NavItem[] = [
+  { label: "首页", href: "/" },
+  { label: "文档", href: "/docs" },
+  { label: "博客", href: "/blog" },
+  { label: "关于", href: "/#contact" },
+];
+---
+
+<div class="flex justify-center w-full">
+  <nav
+    id="main-nav"
+    class="fixed left-1/2 -translate-x-1/2 z-[100] bg-[var(--background)] border border-1 border-transparent backdrop-blur-xl transition-all duration-500 ease-in-out md:top-6 md:bottom-auto bottom-0 w-[80%]"
+  >
+    <div class="container mx-auto flex justify-center items-center p-3">
+      <ul class="flex w-full justify-between md:space-x-6 md:justify-center md:gap-12 gap-6">
+        {
+          navItems.map((item) => (
+            <li class="flex-1 md:flex-none">
+              <a
+                href={item.href}
+                class="flex flex-col items-center gap-1 text-[var(--white-icon)] transition-colors text-xs md:text-base relative group"
+              >
+                <span class="hidden md:inline-block">{item.label}</span>
+                <span class="md:hidden">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<style>
+  nav {
+    transform: translateX(-50%);
+    background-color: var(--background);
+    transition:
+      background-color 0.3s ease,
+      border-radius 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  nav.scrolling {
+    background-color: var(--component-bg, #141414);
+    border-color: #ffffff10;
+    border-radius: 9999px;
+  }
+
+  nav a.active {
+    color: white !important;
+  }
+
+  @media (max-width: 767px) {
+    nav {
+      width: 100% !important;
+      transform: translateX(-50%);
+      bottom: 0;
+      left: 50%;
+      position: fixed;
+      border-radius: 1rem 1rem 0 0;
+      border-color: #ffffff10;
+    }
+
+    nav.scrolling {
+      border-radius: 1rem 1rem 0 0;
+      background-color: var(--component-bg, #141414);
+    }
+
+    body {
+      padding-bottom: 70px;
+    }
+  }
+</style>
+
+<script>
+  const nav = document.getElementById("main-nav");
+
+  function updateNav() {
+    if (window.scrollY > 0) {
+      nav?.classList.add("scrolling");
+    } else {
+      nav?.classList.remove("scrolling");
+    }
+  }
+
+  window.addEventListener("scroll", () => {
+    requestAnimationFrame(updateNav);
+  }, { passive: true });
+</script>

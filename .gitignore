@@ -1,25 +1,26 @@
-# Hugo build output
-public/
-resources/
-.hugo_build.lock
-hugo_stats.json
+# build output
+dist/
 
-# OS files
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
 .DS_Store
-Thumbs.db
 
-# Editor files
-*.swp
-*.swo
-*~
-.vscode/
+# jetbrains setting folder
 .idea/
 
-# Node
-node_modules/
-package-lock.json
-yarn.lock
-package.json
-
-# Hugo modules cache
-_vendor/
+.mimocode/

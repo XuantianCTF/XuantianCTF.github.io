@@ -1,0 +1,57 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import Nav from "@/components/nav.astro";
+import Footer from "@/components/footer.astro";
+import { getCollection } from "astro:content";
+
+const docs = (await getCollection("docs")).sort(
+  (a, b) => (a.data.date?.valueOf() ?? 0) - (b.data.date?.valueOf() ?? 0)
+);
+
+const sections = [
+  { title: "快速入门", items: docs.filter((d) => d.id.startsWith("getting-started")) },
+  { title: "Web 安全", items: docs.filter((d) => d.id.startsWith("web-")) },
+  { title: "逆向工程", items: docs.filter((d) => d.id.startsWith("reverse-")) },
+  { title: "密码学", items: docs.filter((d) => d.id.startsWith("crypto-")) },
+  { title: "PWN", items: docs.filter((d) => d.id.startsWith("pwn-")) },
+  { title: "杂项", items: docs.filter((d) => d.id.startsWith("misc-")) },
+  { title: "移动安全", items: docs.filter((d) => d.id.startsWith("mobile-")) },
+  { title: "渗透测试", items: docs.filter((d) => d.id.startsWith("pentest-")) },
+];
+---
+
+<Layout title="文档">
+  <Nav />
+  <main class="max-w-5xl mx-auto py-24">
+    <h1 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-4">文档</h1>
+    <p class="text-[var(--white-icon)] mb-12">从入门到进阶的 CTF 学习路径。</p>
+
+    <div class="space-y-8">
+      {
+        sections.map((section) => (
+          section.items.length > 0 && (
+            <div>
+              <h2 class="text-2xl font-semibold text-[var(--white)] mb-4">{section.title}</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {section.items.map((doc) => (
+                  <a
+                    href={`/docs/${doc.id}`}
+                    class="group block p-4 rounded-xl border border-[var(--white-icon-tr)] bg-[#1414149c] hover:bg-[var(--white-icon-tr)] hover:border-[var(--sec)] transition-all duration-300"
+                  >
+                    <h3 class="text-lg font-medium text-[var(--white)] group-hover:text-[var(--sec)] transition-colors">
+                      {doc.data.title}
+                    </h3>
+                    {doc.data.description && (
+                      <p class="text-sm text-[var(--white-icon)] mt-1">{doc.data.description}</p>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        ))
+      }
+    </div>
+  </main>
+  <Footer />
+</Layout>
