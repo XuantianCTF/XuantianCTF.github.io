@@ -518,7 +518,7 @@ int c = 15;
 
 ---
 
-### 六、练习平台
+### 十一、练习平台
 
 - [CrackMes.one](https://crackmes.one/)
 - [picoCTF](https://picoctf.org/)

@@ -264,20 +264,14 @@ def full_key_leak(c, e, n, dp, dq, qinv):
 
 ```python
 def franklin_reiter_attack(c1, c2, e, n, a, b):
-    """
-    当 m2 = a*m1 + b 时，可以恢复明文。
-    通过计算 gcd(x^e - c1, (ax+b)^e - c2) 得到 x - m1
-    """
-    from Crypto.PublicKey import RSA
-    # 使用多项式环
-    P.<x> = PolynomialRing(Zmod(n))
-    g1 = x^e - c1
-    g2 = (a*x + b)^e - c2
-    # 求 gcd
-    g = gcd(g1, g2)
-    # 得到 x - m1
-    m1 = -g.monic().coefficients()[0]
-    return m1
+    # SageMath 实现，非 Python
+    # P.<x> = PolynomialRing(Zmod(n))
+    # g1 = x^e - c1
+    # g2 = (a*x + b)^e - c2
+    # g = gcd(g1, g2)
+    # m1 = -g.monic().coefficients()[0]
+    # return m1
+    pass
 ```
 
 #### 9. p 高位泄露（Coppersmith）

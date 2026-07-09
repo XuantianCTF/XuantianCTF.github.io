@@ -456,7 +456,7 @@ for (int i = 0; i < len; i++) {
 
 ---
 
-### 六、解题流程
+### 十、解题流程
 
 1. **获取 APK**：下载或从设备提取
 2. **静态分析**：jadx 反编译查看代码
@@ -467,7 +467,7 @@ for (int i = 0; i < len; i++) {
 
 ---
 
-### 七、常用命令
+### 十一、常用命令
 
 ```bash
 # 查看 APK 信息
@@ -485,7 +485,7 @@ frida-ps -U | grep app
 
 ---
 
-### 八、练习平台
+### 十二、练习平台
 
 - [diva-android](https://github.com/intoHere/diva-android)
 - [MSTG](https://github.com/OWASP/owasp-mstg)
