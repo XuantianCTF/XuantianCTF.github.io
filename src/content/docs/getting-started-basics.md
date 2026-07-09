@@ -544,3 +544,9 @@ python3 -c "print('hello')"
 base64 -d <<< "aGVsbG8="
 echo "obfuscated" | rot13
 ```
+
+--- 
+
+### 附：ABI 参考文档
+
+- [ABI 手册 (PDF)](/abi.pdf) — 包含 x86/x64 系统调用号、寄存器使用约定等参考信息。
