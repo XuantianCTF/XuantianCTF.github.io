@@ -10,6 +10,7 @@ const docs = (await getCollection("docs")).sort(
 
 const sections = [
   { title: "快速入门", items: docs.filter((d) => d.id.startsWith("getting-started")) },
+  { title: "Linux 基础", items: docs.filter((d) => d.id.startsWith("linux-")) },
   { title: "Web 安全", items: docs.filter((d) => d.id.startsWith("web-")) },
   { title: "逆向工程", items: docs.filter((d) => d.id.startsWith("reverse-")) },
   { title: "密码学", items: docs.filter((d) => d.id.startsWith("crypto-")) },
