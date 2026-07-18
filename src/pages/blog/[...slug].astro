@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/nav.astro";
 import Footer from "@/components/footer.astro";
+import Giscus from "@/components/Giscus.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -35,6 +36,7 @@ const { Content } = await render(post);
       <div class="prose prose-invert max-w-none text-[var(--white)]">
         <Content />
       </div>
+      <Giscus />
     </article>
   </main>
   <Footer />

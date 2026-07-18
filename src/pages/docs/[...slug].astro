@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/nav.astro";
 import Footer from "@/components/footer.astro";
+import Giscus from "@/components/Giscus.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -41,6 +42,7 @@ const { prev, next } = getAdjacentDocs(doc.id);
       <div class="prose prose-invert max-w-none text-[var(--white)]">
         <Content />
       </div>
+      <Giscus />
     </article>
 
     <div class="flex justify-between mt-12 pt-8 border-t border-[#ffffff10]">

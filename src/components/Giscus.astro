@@ -1,0 +1,45 @@
+---
+---
+
+<div id="giscus-container" class="mt-12 pt-8 border-t border-white/10">
+  <h2 class="text-xl font-semibold text-[var(--white)] mb-6">💬 评论</h2>
+  <div class="giscus"></div>
+</div>
+
+<script is:inline>
+  function loadGiscus() {
+    const existing = document.querySelector("script.giscus-script");
+    if (existing) existing.remove();
+
+    const script = document.createElement("script");
+    script.src = "https://giscus.app/client.js";
+    script.setAttribute("data-repo", "XuantianCTF/XuantianCTF.github.io");
+    script.setAttribute("data-repo-id", "R_kgDOLxRRNw");
+    script.setAttribute("data-category", "Announcements");
+    script.setAttribute("data-category-id", "DIC_kwDOLxRRN84CkgI5");
+    script.setAttribute("data-mapping", "pathname");
+    script.setAttribute("data-strict", "0");
+    script.setAttribute("data-reactions-enabled", "1");
+    script.setAttribute("data-emit-metadata", "0");
+    script.setAttribute("data-input-position", "top");
+    script.setAttribute("data-theme", "dark_dimmed");
+    script.setAttribute("data-lang", "zh-CN");
+    script.setAttribute("crossorigin", "anonymous");
+    script.async = true;
+    script.classList.add("giscus-script");
+
+    document.getElementById("giscus-container").appendChild(script);
+  }
+
+  loadGiscus();
+</script>
+
+<style is:global>
+  #giscus-container .giscus {
+    border-radius: 0.5rem;
+  }
+
+  #giscus-container .giscus iframe {
+    max-width: 100%;
+  }
+</style>
