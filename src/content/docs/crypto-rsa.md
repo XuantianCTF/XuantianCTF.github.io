@@ -75,29 +75,14 @@ print(long_to_bytes(m))
 
 ```python
 import gmpy2
+from Crypto.Util.number import long_to_bytes
 
 e = 3
 c = 12345678901234567890
 m, exact = gmpy2.iroot(c, e)
-if exact:
-    print(f"明文: {long_to_bytes(m)}")
-
-# e=3 广播攻击（Hastad）：同一明文用不同 n 加密 3 次，用 CRT 恢复
-def hastad_attack(c1, n1, c2, n2, c3, n3, e=3):
-    import gmpy2
-    # CRT 合并
-    N = n1 * n2 * n3
-    N1 = N // n1
-    N2 = N // n2
-    N3 = N // n3
-    t1 = gmpy2.invert(N1, n1)
-    t2 = gmpy2.invert(N2, n2)
-    t3 = gmpy2.invert(N3, n3)
-    c = (c1 * N1 * t1 + c2 * N2 * t2 + c3 * N3 * t3) % N
-    m, exact = gmpy2.iroot(c, e)
-    if exact:
-        return long_to_bytes(m)
-    return None
+if not exact:
+    raise ValueError("c 不是完整的 e 次幂")
+print(f"明文: {long_to_bytes(m)}")
 ```
 
 #### 3. 共模攻击
@@ -105,17 +90,22 @@ def hastad_attack(c1, n1, c2, n2, c3, n3, e=3):
 同一明文 m 用相同的 n、不同的 e 加密。
 
 ```python
+from Crypto.Util.number import long_to_bytes
+
 def common_modulus_attack(c1, e1, c2, e2, n):
     import gmpy2
     # 扩展欧几里得：e1*s1 + e2*s2 = gcd(e1, e2) = 1
     g, s1, s2 = gmpy2.gcdext(e1, e2)
-    if s1 < 0:
-        s1 = -s1
-        c1 = gmpy2.invert(c1, n)
-    if s2 < 0:
-        s2 = -s2
-        c2 = gmpy2.invert(c2, n)
-    m = (pow(c1, s1, n) * pow(c2, s2, n)) % n
+    if g != 1:
+        raise ValueError("e1 与 e2 必须互素")
+
+    def signed_pow(base, exponent):
+        if exponent < 0:
+            base = int(gmpy2.invert(base, n))
+            exponent = -exponent
+        return pow(base, int(exponent), n)
+
+    m = signed_pow(c1, s1) * signed_pow(c2, s2) % n
     return long_to_bytes(m)
 ```
 
@@ -150,8 +140,10 @@ def wiener_attack(e, n):
     for k, d in convergents(cf):
         if k == 0:
             continue
-        # φ(n) ≈ (e*d - 1) / k
-        phi = (e * d - 1) // k
+        ed_minus_1 = e * d - 1
+        if ed_minus_1 % k != 0:
+            continue
+        phi = ed_minus_1 // k
         # 解方程 x^2 - (n - phi + 1)x + n = 0
         a = 1
         b = -(n - phi + 1)
@@ -170,7 +162,11 @@ def wiener_attack(e, n):
     return None
 
 # 使用
+from Crypto.Util.number import long_to_bytes
+
 d = wiener_attack(e, n)
+if d is None:
+    raise ValueError("未找到满足 Wiener 条件的私钥指数")
 m = pow(c, d, n)
 print(long_to_bytes(m))
 ```
@@ -198,6 +194,8 @@ def fermat_factor(n):
     return None
 
 p, q = fermat_factor(n)
+if p is None:
+    raise ValueError("未找到接近的素因数")
 phi = (p - 1) * (q - 1)
 d = inverse(e, phi)
 m = pow(c, d, n)
@@ -206,51 +204,38 @@ print(long_to_bytes(m))
 
 #### 6. Boneh-Durfee 攻击
 
-当 d 小于 `n^0.292` 时使用，基于格归约（LLL）。
+当私钥指数满足约 `d < n^0.292` 时，可以尝试 Boneh-Durfee 攻击。该攻击依赖 Coppersmith 小根方法和 LLL 格规约，不能用几行普通 Python 完整实现。
 
-```python
-# 需要安装 pycryptodome
-# pip install pycryptodome
-
-def boneh_durfee_attack(e, n):
-    """
-    Boneh-Durfee 攻击简化实现。
-    实际 CTF 中推荐使用 RsaCtfTool 或直接调用
-    https://github.com/mimoo/RSA-and-LLL-attacks
-    """
-    # 参数
-    delta = 0.292  # 理论界限
-    M = int(n**delta)  # d 的上界
-    # ... 格构造和 LLL 规约（实现较复杂）
-    # 实际使用推荐 RsaCtfTool
-    pass
-```
+实际解题时应使用 SageMath，并参考 [RSA-and-LLL-attacks](https://github.com/mimoo/RSA-and-LLL-attacks) 中经过验证的实现。
 
 #### 7. dp / dq 泄露
 
 当 dp（或 dq）已知时，可以恢复私钥。
 
 ```python
+from Crypto.Util.number import inverse, long_to_bytes
+
+def recover_factor_from_dp(e, n, dp):
+    """已知 dp = d mod (p-1)，恢复 p 和 q。"""
+    value = e * dp - 1
+    for k in range(1, e):
+        if value % k != 0:
+            continue
+        p = value // k + 1
+        if p > 1 and n % p == 0:
+            return p, n // p
+    raise ValueError("无法从 dp 恢复素因数")
+
 def dp_leak_attack(c, e, n, dp):
-    """已知 dp = d mod (p-1)"""
-    from Crypto.Util.number import long_to_bytes
-    # 通过 dp 恢复 p
-    for k in range(1, e + 1):
-        p = (dp * e - 1) // k + 1
-        if n % p == 0:
-            q = n // p
-            break
+    p, q = recover_factor_from_dp(e, n, dp)
     phi = (p - 1) * (q - 1)
     d = inverse(e, phi)
     m = pow(c, d, n)
     return long_to_bytes(m)
 
-# dp + dq + qinv 全部泄露
-def full_key_leak(c, e, n, dp, dq, qinv):
-    """利用中国剩余定理加速解密"""
-    p = dp_leak_attack(0, e, n, dp)  # 先恢复 p
-    # 实际不需重算，从 dp 泄露即可恢复
-    q = n // p
+# qinv = q^(-1) mod p
+def crt_decrypt(c, p, q, dp, dq, qinv):
+    """使用泄露的 CRT 参数直接解密。"""
     m1 = pow(c, dp, p)
     m2 = pow(c, dq, q)
     h = (qinv * (m1 - m2)) % p
@@ -264,38 +249,125 @@ def full_key_leak(c, e, n, dp, dq, qinv):
 
 ```python
 def franklin_reiter_attack(c1, c2, e, n, a, b):
-    # SageMath 实现，非 Python
-    # P.<x> = PolynomialRing(Zmod(n))
-    # g1 = x^e - c1
-    # g2 = (a*x + b)^e - c2
-    # g = gcd(g1, g2)
-    # m1 = -g.monic().coefficients()[0]
-    # return m1
-    pass
+    P.<x> = PolynomialRing(Zmod(n))
+    f1 = x^e - c1
+    f2 = (a*x + b)^e - c2
+    while f2:
+        f1, f2 = f2, f1 % f2
+    g = f1.monic()
+    if g.degree() != 1:
+        raise ValueError("未得到一次公因式")
+    return int(-g[0])
 ```
 
-#### 9. p 高位泄露（Coppersmith）
+#### 9. 低加密指数广播攻击
 
-已知 p 的部分高位比特时恢复完整 p。
+同一明文 `m` 使用相同的小指数 `e`，在至少 `e` 个两两互素的不同模数下加密时，可以使用 Hastad 广播攻击。先通过中国剩余定理恢复整数 `m^e`，再开 `e` 次方根。
 
 ```python
-def partial_p_attack(n, e, c, p_high, bits):
-    """
-    p_high: p 的高位部分
-    bits: 已知的位数
-    """
-    # 使用 sage 实现
-    # PR.<x> = PolynomialRing(Zmod(n))
-    # f = x + p_high
-    # roots = f.small_roots(X=2^(512-bits), beta=0.4)
-    # if roots:
-    #     p = int(p_high + roots[0])
-    #     q = n // p
-    #     phi = (p-1)*(q-1)
-    #     d = inverse(e, phi)
-    #     m = pow(c, d, n)
-    #     return long_to_bytes(m)
-    pass
+from math import gcd, prod
+import gmpy2
+from Crypto.Util.number import inverse, long_to_bytes
+
+def crt(residues, moduli):
+    if len(residues) != len(moduli):
+        raise ValueError("密文与模数数量不一致")
+    for i, n1 in enumerate(moduli):
+        for n2 in moduli[i + 1:]:
+            if gcd(n1, n2) != 1:
+                raise ValueError("模数必须两两互素；存在公因数时应改用共享素数攻击")
+
+    modulus_product = prod(moduli)
+    result = 0
+    for residue, modulus in zip(residues, moduli):
+        partial = modulus_product // modulus
+        result += residue * partial * inverse(partial, modulus)
+    return result % modulus_product
+
+def hastad_attack(ciphertexts, moduli, e):
+    if len(ciphertexts) < e:
+        raise ValueError("通常至少需要 e 组密文")
+    powered_message = crt(ciphertexts, moduli)
+    message, exact = gmpy2.iroot(powered_message, e)
+    if not exact:
+        raise ValueError("未得到完整的 e 次方根")
+    return long_to_bytes(int(message))
+```
+
+#### 10. 素数幂模数
+
+当题目给出：
+
+$$
+n=p^r,\qquad p\text{ 为素数},\quad r\ge 2
+$$
+
+此时 `n` 是素数幂，不存在两个不同的素因数。特别地，当 RSA 中 `p = q` 时，有 `n = p^2`。
+
+欧拉函数为：
+
+$$
+\varphi(p^r)=p^r-p^{r-1}=p^{r-1}(p-1)
+$$
+
+因为小于等于 `p^r` 的整数中共有 `p^{r-1}` 个 `p` 的倍数，去掉它们后，剩余整数均与 `p^r` 互素。
+
+```python
+def prime_power_phi(p, r):
+    if r < 1:
+        raise ValueError("r 必须为正整数")
+    return p**r - p**(r - 1)
+```
+
+#### 11. 多素数 RSA
+
+如果 `n = p * q * r`，并且 `p`、`q`、`r` 是互不相同的素数，则：
+
+$$
+\varphi(n)=(p-1)(q-1)(r-1)
+$$
+
+更一般地，对于互不相同的素数列表，可以计算：
+
+```python
+from math import prod
+
+def multi_prime_phi(primes):
+    if len(primes) != len(set(primes)):
+        raise ValueError("该公式要求素因数互不相同")
+    return prod(p - 1 for p in primes)
+```
+
+#### 12. 共享素数攻击
+
+两个 RSA 模数只要复用了同一个素因数，就可以通过最大公约数分解。该攻击不要求它们使用相同的明文或加密指数。
+
+```python
+from math import gcd
+
+shared = gcd(n1, n2)
+if shared in (1, n1, n2):
+    raise ValueError("没有发现可利用的共享素因数")
+
+p1, q1 = shared, n1 // shared
+p2, q2 = shared, n2 // shared
+```
+
+#### 13. p 高位泄露（Coppersmith）
+
+已知素数 `p` 的部分高位时，可以将未知低位建模为小根并恢复完整的 `p`。下面的 `p_high` 是未移位的高位整数，`unknown_bits` 是未知低位的位数。
+
+```python
+def recover_p_from_high_bits(n, p_high, unknown_bits):
+    P.<x> = PolynomialRing(Zmod(n), implementation="NTL")
+    known_part = p_high << unknown_bits
+    f = x + known_part
+    roots = f.monic().small_roots(X=2^unknown_bits, beta=0.5)
+    for root in roots:
+        p = int(known_part + root)
+        if p > 1 and n % p == 0:
+            return p, n // p
+    raise ValueError("未找到满足条件的素因数")
 ```
 
 ---
@@ -329,6 +401,14 @@ f = FactorDB(n)
 f.connect()
 print(f.get_factor_list())
 ```
+#### SageMath
+
+SageMath 集成了大整数、多项式环、格规约和小根算法。Coppersmith、Boneh-Durfee、Franklin-Reiter 等攻击通常需要在 SageMath 环境中运行，而不是直接使用普通 Python。
+
+```bash
+sage solve.sage
+```
+
 
 ---
 
@@ -337,9 +417,11 @@ print(f.get_factor_list())
 ```python
 from Crypto.Util.number import long_to_bytes, inverse
 
-def rsa_decrypt(c, e, n):
-    # 简单的 RSA 解密（需要知道 d）
-    d = inverse(e, n - 1)  # 假设 n 是素数
+def rsa_decrypt(c, e, p, q):
+    """已知 RSA 的两个素因数时解密。"""
+    n = p * q
+    phi = (p - 1) * (q - 1)
+    d = inverse(e, phi)
     m = pow(c, d, n)
     return long_to_bytes(m)
 
@@ -362,6 +444,11 @@ print(f"e = {key.e}")
 | Wiener | d 较小 | 连分数 |
 | p 接近 q | p, q 接近 | Fermat 分解 |
 | dp 泄露 | 已知 dp | 计算 d |
+| 广播攻击 | 同 m、同 e、不同且两两互素的 n | CRT 后开 e 次方根 |
+| 素数幂模数 | n = p^r | 使用 φ(p^r) |
+| 多素数 RSA | n 由三个或更多素数组成 | 分解后计算各 (p_i - 1) 的乘积 |
+| 共享素数 | gcd(n1, n2) > 1 | 最大公约数分解 |
+| p 部分位泄露 | 已知 p 的部分高位或低位 | Coppersmith 小根攻击 |
 
 ---
 
