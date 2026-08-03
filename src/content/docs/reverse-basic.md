@@ -81,19 +81,19 @@ date: 2026-06-21T03:00:00.000Z
 
 BUUCTF
 
-[https://www.polarctf.com/#/page/challenges](https://www.polarctf.com/#/page/challenges（polarctf），)
+[https://www.polarctf.com/#/page/challenges](https://www.polarctf.com/#/page/challenges)
 
 polarCTF
 
-[https://www.nssctf.cn/problem](https://www.nssctf.cn/problem（NSSCTF）)
+[https://www.nssctf.cn/problem](https://www.nssctf.cn/problem)
 
 NSSCTF
 
-[https://ctf.bugku.com/](https://ctf.bugku.com/（bugkuctf）)
+[https://ctf.bugku.com/](https://ctf.bugku.com/)
 
 bugkuCTF
 
-[https://ctf.xidian.edu.cn/](https://ctf.xidian.edu.cn/（西电CTF终端）)
+[https://ctf.xidian.edu.cn/](https://ctf.xidian.edu.cn/)
 
 西电CTF终端
 
@@ -115,12 +115,12 @@ bugkuCTF
 
 ​	在实际工作和项目中，你会遇到更加复杂的软件环境，例如大型商业软件分析、恶意代码追踪、漏洞定位、移动应用安全分析、协议逆向以及软件保护机制研究等。这些场景中的代码往往没有题目提示，也不会存在明确的目标，需要你自己建立分析思路，从未知程序中寻找突破口。因此，在具备一定基础之后，可以尝试进入更多实战平台进行训练。例如：
 
-- **Hack The Box**[(https://www.hackthebox.com/)](https://www.hackthebox.com/）：提供大量接近真实环境的渗透测试与安全分析场景，其中也包含部分逆向和恶意软件分析方向的训练。)
-- **Crackmes.one**[(https://crackmes.one/)](https://crackmes.one/）：这是一个专门面向逆向工程学习的平台，里面包含大量CrackMe（就是专门用于学习逆向分析的小型程序）。题目通常围绕密码验证、序列号生成、算法分析、反调试、代码混淆等方向展开，非常适合训练) IDA、Ghidra、x64dbg 等工具的使用能力。）
-- **Root-Me**[(https://www.root-me.org/?lang=zh)](https://www.root-me.org/?lang=zh）：拥有较丰富的逆向、破解、程序分析类挑战。)
+- **Hack The Box**[https://www.hackthebox.com/](https://www.hackthebox.com/)：提供大量接近真实环境的渗透测试与安全分析场景，其中也包含部分逆向和恶意软件分析方向的训练。
+- **Crackmes.one**[https://crackmes.one/](https://crackmes.one/)：这是一个专门面向逆向工程学习的平台，里面包含大量CrackMe（就是专门用于学习逆向分析的小型程序）。题目通常围绕密码验证、序列号生成、算法分析、反调试、代码混淆等方向展开，非常适合训练 IDA、Ghidra、x64dbg 等工具的使用能力。
+- **Root-Me**[https://www.root-me.org/?lang=zh](https://www.root-me.org/?lang=zh)：拥有较丰富的逆向、破解、程序分析类挑战。
 
   当然，说到这里怎么能不说一嘴我们伟大无比的：
-- **GitHub**[(https://github.com/)](https://github.com/）：参与安全工具开发、阅读优秀安全项目源码、提交漏洞分析报告，也是提升工程能力的重要方式。)
+- **GitHub**[https://github.com/](https://github.com/)：参与安全工具开发、阅读优秀安全项目源码、提交漏洞分析报告，也是提升工程能力的重要方式。
 
   （ps.那些个放话说把github学完的人你们就当是那个每天对着空气搓空气碟的嘉豪吧，没必要和这种人肩并肩，这很愚昧。）
 
