@@ -3,7 +3,9 @@ import Layout from "@/layouts/Layout.astro";
 import Nav from "@/components/nav.astro";
 import Footer from "@/components/footer.astro";
 import Giscus from "@/components/Giscus.astro";
+import DocSidebar from "@/components/DocSidebar.astro";
 import { getCollection, render } from "astro:content";
+import { getDocSections } from "@/lib/docs-sections";
 
 export async function getStaticPaths() {
   const docs = await getCollection("docs");
@@ -16,42 +18,42 @@ export async function getStaticPaths() {
 const { doc } = Astro.props;
 const { Content } = await render(doc);
 
-const allDocs = await getCollection("docs");
+const sections = await getDocSections();
 
-function getAdjacentDocs(currentId: string) {
-  const sorted = allDocs.sort((a, b) => (a.data.date?.valueOf() ?? 0) - (b.data.date?.valueOf() ?? 0));
-  const idx = sorted.findIndex((d) => d.id === currentId);
-  return {
-    prev: idx > 0 ? sorted[idx - 1] : null,
-    next: idx < sorted.length - 1 ? sorted[idx + 1] : null,
-  };
-}
-
-const { prev, next } = getAdjacentDocs(doc.id);
+const currentSection = sections.find((s) => s.items.some((i) => i.id === doc.id));
+const idx = currentSection?.items.findIndex((i) => i.id === doc.id) ?? -1;
+const prev = idx > 0 ? currentSection?.items[idx - 1] : null;
+const next = idx >= 0 && idx < (currentSection?.items.length ?? 0) - 1 ? currentSection?.items[idx + 1] : null;
 ---
 
 <Layout title={doc.data.title}>
   <Nav />
-  <main class="max-w-3xl mx-auto py-24">
-    <a href="/docs" class="text-[var(--sec)] hover:underline mb-6 inline-block">&larr; 返回文档</a>
-    <article>
-      <h1 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-4">{doc.data.title}</h1>
-      {doc.data.description && (
-        <p class="text-[var(--white-icon)] mb-8">{doc.data.description}</p>
-      )}
-      <div class="prose prose-invert max-w-none text-[var(--white)]">
-        <Content />
-      </div>
-      <Giscus />
-    </article>
+  <main class="max-w-6xl mx-auto py-24 px-4">
+    <div class="flex gap-8">
+      <DocSidebar sections={sections} currentId={doc.id} />
 
-    <div class="flex justify-between mt-12 pt-8 border-t border-[#ffffff10]">
-      {prev ? (
-        <a href={`/docs/${prev.id}`} class="text-[var(--sec)] hover:underline">&larr; {prev.data.title}</a>
-      ) : <span />}
-      {next ? (
-        <a href={`/docs/${next.id}`} class="text-[var(--sec)] hover:underline">{next.data.title} &rarr;</a>
-      ) : <span />}
+      <div class="flex-1 min-w-0">
+        <a href="/docs" class="text-[var(--sec)] hover:underline mb-6 inline-block">&larr; 返回文档</a>
+        <article>
+          <h1 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-4">{doc.data.title}</h1>
+          {doc.data.description && (
+            <p class="text-[var(--white-icon)] mb-8">{doc.data.description}</p>
+          )}
+          <div class="prose prose-invert max-w-none text-[var(--white)]">
+            <Content />
+          </div>
+          <Giscus />
+        </article>
+
+        <div class="flex justify-between mt-12 pt-8 border-t border-[#ffffff10]">
+          {prev ? (
+            <a href={`/docs/${prev.id}`} class="text-[var(--sec)] hover:underline">&larr; {prev.title}</a>
+          ) : <span />}
+          {next ? (
+            <a href={`/docs/${next.id}`} class="text-[var(--sec)] hover:underline">{next.title} &rarr;</a>
+          ) : <span />}
+        </div>
+      </div>
     </div>
   </main>
   <Footer />

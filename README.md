@@ -10,12 +10,15 @@
 
 | 方向 | 说明 |
 |------|------|
-| [Web 安全](https://xuantianctf.github.io/docs/web-sqli/) | SQL 注入、XSS、文件上传等 Web 漏洞攻防 |
+| [快速入门](https://xuantianctf.github.io/docs/getting-started/) | 如何开始使用玄天 CTF 实验室 |
+| [Linux 基础](https://xuantianctf.github.io/docs/linux-basics/) | Linux 系统基础、常用命令与 CTF 实战技巧 |
+| [Web 安全](https://xuantianctf.github.io/docs/web-basics/) | SQL 注入、XSS、文件上传等 Web 漏洞攻防 |
 | [逆向工程](https://xuantianctf.github.io/docs/reverse-basic/) | 二进制分析、脱壳、调试等逆向技术 |
 | [密码学](https://xuantianctf.github.io/docs/crypto-classical/) | 古典密码、RSA、哈希碰撞等密码学挑战 |
 | [PWN](https://xuantianctf.github.io/docs/pwn-stack-overflow/) | 栈溢出、堆利用、ROP 等二进制漏洞利用 |
 | [杂项](https://xuantianctf.github.io/docs/misc-steganography/) | 隐写术、流量分析、取证分析等综合技能 |
 | [移动安全](https://xuantianctf.github.io/docs/mobile-android/) | Android/iOS 逆向与安全分析 |
+| [渗透测试](https://xuantianctf.github.io/docs/pentest-recon/) | 信息收集、漏洞利用与后渗透技术 |
 
 ## 🏠 博客
 
@@ -69,32 +72,38 @@ tags:
 
 ### 编写文档
 
-文档位于 `src/content/docs/` 目录，使用扁平化命名：
+文档位于 `src/content/docs/` 目录，使用扁平化命名（`分类-主题.md`），并按文件名前缀自动分组到侧边栏导航中：
 
 ```
 src/content/docs/
-├── getting-started.md        # 快速入门
-├── web-sqli.md               # SQL 注入
-├── web-xss.md                # XSS
-├── web-upload.md             # 文件上传
-├── reverse-basic.md          # 逆向基础
-├── crypto-classical.md       # 古典密码
-├── crypto-rsa.md             # RSA
-├── pwn-stack-overflow.md     # 栈溢出
-├── misc-steganography.md     # 隐写术
-├── misc-forensics.md         # 取证分析
-├── misc-traffic.md           # 流量分析
-├── mobile-android.md         # Android 逆向
-├── pentest-recon.md          # 信息收集
-├── pentest-exploit.md        # 漏洞利用
-└── pentest-post-exploit.md   # 后渗透
+├── getting-started.md            # 快速入门
+├── getting-started-basics.md     # 计算机基础
+├── linux-basics.md               # Linux 基础
+├── web-basics.md                 # Web 安全入门
+├── web-command-injection.md      # 命令注入
+├── web-path-traversal.md         # 路径遍历
+├── web-upload.md                 # 文件上传
+├── web-xss.md                    # XSS
+├── reverse-basic.md              # 逆向基础
+├── crypto-classical.md           # 古典密码
+├── crypto-rsa.md                 # RSA
+├── pwn-stack-overflow.md         # 栈溢出
+├── misc-forensics.md             # 内存取证
+├── misc-steganography.md         # 隐写术
+├── misc-traffic.md               # 流量分析
+├── mobile-android.md             # Android 逆向
+├── pentest-exploit.md            # 漏洞利用
+├── pentest-post-exploit.md       # 后渗透
+└── pentest-recon.md              # 信息收集
 ```
 
 **新建文档**：
 
 1. 在 `src/content/docs/` 下创建 `.md` 文件
 2. 文件名格式：`分类-主题.md`（如 `web-sqli.md`）
-3. 添加 Front matter：
+3. 文件名前缀决定其在侧边栏中的分组（`web-` → Web 安全、`crypto-` → 密码学等）
+4. 如需新增分类，在 `src/lib/docs-sections.ts` 的 `sectionDefs` 中追加一个前缀映射即可
+5. 添加 Front matter：
 
 ```markdown
 ---
@@ -155,10 +164,13 @@ pnpm preview
 │   │   ├── projects.astro    # CTF 方向展示
 │   │   ├── contact.astro     # 联系方式
 │   │   ├── footer.astro      # 页脚
-│   │   └── logoWall.astro    # 技术栈滚动
+│   │   ├── logoWall.astro    # 技术栈滚动
+│   │   └── DocSidebar.astro  # 文档侧边栏导航
 │   ├── React/                # React 组件
 │   │   ├── LetterGlitch.tsx  # 文字特效
 │   │   └── SkillsList.tsx    # 技能列表
+│   ├── lib/                  # 共享工具
+│   │   └── docs-sections.ts  # 文档分类分组定义
 │   ├── content/
 │   │   ├── blog/             # 博客文章
 │   │   └── docs/             # 文档页面

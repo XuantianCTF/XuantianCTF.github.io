@@ -1,0 +1,43 @@
+---
+import type { DocSection } from "@/lib/docs-sections";
+
+interface Props {
+  sections: DocSection[];
+  currentId?: string;
+}
+
+const { sections, currentId } = Astro.props;
+---
+
+<aside class="hidden lg:block w-64 shrink-0">
+  <nav class="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">
+    <ul class="space-y-6">
+      {
+        sections.map((section) => (
+          <li>
+            <p class="text-xs font-semibold uppercase tracking-wider text-[var(--white-icon)] mb-2 px-3">
+              {section.title}
+            </p>
+            <ul class="space-y-1 border-l border-[var(--white-icon-tr)]">
+              {section.items.map((item) => (
+                <li>
+                  <a
+                    href={`/docs/${item.id}`}
+                    class:list={[
+                      "block text-sm px-3 py-1.5 rounded-r-md border-l transition-colors",
+                      currentId === item.id
+                        ? "text-[var(--sec)] bg-[var(--white-icon-tr)] font-medium border-[var(--sec)]"
+                        : "text-[var(--white-icon)] hover:text-[var(--white)] border-transparent hover:bg-[var(--white-icon-tr)]",
+                    ]}
+                  >
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</aside>
