@@ -2,6 +2,7 @@
 title: 计算机基础
 description: 寄存器、栈、堆、内存布局等 CTF 必备基础。
 date: 2026-07-09T00:00:00.000Z
+order: 2
 ---
 
 

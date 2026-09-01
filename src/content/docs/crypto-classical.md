@@ -2,6 +2,7 @@
 title: 古典密码
 description: 常见古典密码算法与破解方法。
 date: 2026-06-21T04:00:00.000Z
+order: 1
 ---
 
 

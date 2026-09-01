@@ -2,6 +2,7 @@
 title: 快速入门
 description: 如何开始使用玄天 CTF 实验室。
 date: 2026-06-21T00:00:00.000Z
+order: 1
 ---
 
 

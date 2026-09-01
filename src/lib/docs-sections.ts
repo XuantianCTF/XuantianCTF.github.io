@@ -6,10 +6,15 @@ export interface DocSection {
   items: { id: string; title: string; description?: string }[];
 }
 
+function compareDocs(a: { data: { order?: number; date?: Date } }, b: { data: { order?: number; date?: Date } }) {
+  const aOrder = a.data.order ?? Number.MAX_SAFE_INTEGER;
+  const bOrder = b.data.order ?? Number.MAX_SAFE_INTEGER;
+  if (aOrder !== bOrder) return aOrder - bOrder;
+  return (a.data.date?.valueOf() ?? 0) - (b.data.date?.valueOf() ?? 0);
+}
+
 export async function getDocSections(): Promise<DocSection[]> {
-  const docs = (await getCollection("docs")).sort(
-    (a, b) => (a.data.date?.valueOf() ?? 0) - (b.data.date?.valueOf() ?? 0)
-  );
+  const docs = (await getCollection("docs")).sort(compareDocs);
 
   const sectionDefs = [
     { title: "快速入门", prefix: "getting-started" },

@@ -2,6 +2,7 @@
 title: 逆向基础
 description: 二进制逆向工程入门指南。
 date: 2026-06-21T03:00:00.000Z
+order: 1
 ---
 
 # REVERSE入门☞北 -> [绯野](https://github.com/R1C3SH0W3R)
